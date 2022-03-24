@@ -17,7 +17,7 @@ jobs:
       - name: Selenium Test
         uses: addnab/docker-run-action@v3
         env:
-          TEST_URL: "http://${{ inputs.test_url }}"
+          TEST_URL: ${{ inputs.test_url }}
         with:
           username: ${{ secrets.dockerhub_username }}
           password: ${{ secrets.dockerhub_password }}
