@@ -1,0 +1,29 @@
+on:
+  workflow_call:
+    inputs:
+      test_url:
+        required: true
+        type: string
+      max_attempts:
+        type: number
+        default: 15
+      retry_delay_sec:
+        type: number
+        default: 5
+      connect_timeout:
+        type: number
+        default: 1
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+    env:
+      test_url: ${{ inputs.test_url }}
+      max-attempts: ${{ inputs.max_attempts }}
+      retry-delay-sec: ${{ inputs.retry_delay_sec }}
+      connect-timeout: ${{ inputs.connect_timeout }}
+    steps:
+      - name: Application health check
+        run: |
+          echo "ECS Task Test URL: ${{ env.test_url }}"
+          curl -v --fail -s --max-time 3 --connect-timeout ${{ env.connect-timeout }} --retry ${{ env.max-attempts }} --retry-delay ${{ env.retry-delay-sec }} ${{ env.test_url }} -L  | jq
