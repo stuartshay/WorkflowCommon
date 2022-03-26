@@ -7,6 +7,15 @@ on:
       ecs_service:
         required: true
         type: string
+      aws_region:
+        required: true
+        type: string
+        default: "us-east-1"
+      secrets:
+        AWS_ACCESS_KEY_ID:
+          required: true
+        AWS_SECRET_ACCESS_KEY:
+          required: true
     outputs:
       app_url:
         description: "The ECS application URL"
@@ -20,7 +29,16 @@ jobs:
     env:
       ecs_cluster: ${{ inputs.ecs_cluster }}
       ecs_service: ${{ inputs.ecs_service }}
+      AWS_REGION: ${{ inputs.aws_region }}
     steps:
+      - name: Configure AWS credentials
+        id: aws-cred
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Set Task Public IP
         run: |
           TASK_ARN=$(aws ecs list-tasks --cluster ${{ env.ecs_cluster }} --service-name ${{ env.ecs_service }} --query 'taskArns[0]' --output text)
