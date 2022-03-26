@@ -11,11 +11,11 @@ on:
         required: true
         type: string
         default: "us-east-1"
-      secrets:
-        AWS_ACCESS_KEY_ID:
-          required: true
-        AWS_SECRET_ACCESS_KEY:
-          required: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
     outputs:
       app_url:
         description: "The ECS application URL"
