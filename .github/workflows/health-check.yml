@@ -13,17 +13,29 @@ on:
       connect_timeout:
         type: number
         default: 1
+      http_status_code_expected:
+        type: number
+        default: 200
 
 jobs:
   health_check:
     runs-on: ubuntu-latest
     env:
       test_url: ${{ inputs.test_url }}
-      max-attempts: ${{ inputs.max_attempts }}
-      retry-delay-sec: ${{ inputs.retry_delay_sec }}
-      connect-timeout: ${{ inputs.connect_timeout }}
+      http_status_code_expected: ${{ inputs.http_status_code_expected }}
+      max_attempts: ${{ inputs.max_attempts }}
+      retry_delay_sec: ${{ inputs.retry_delay_sec }}
+      connect_timeout: ${{ inputs.connect_timeout }}
     steps:
       - name: Application health check
         run: |
-          echo "ECS Task Test URL: ${{ env.test_url }}"
-          curl -v --fail -s --max-time 3 --connect-timeout ${{ env.connect-timeout }} --retry ${{ env.max-attempts }} --retry-delay ${{ env.retry-delay-sec }} ${{ env.test_url }} -L  | jq
+          echo "Test URL: ${{ env.test_url }}"
+          echo "Check if there is a HTTP ${{ env.http_status_code_expected }} status code...."
+          HTTP_STATUS_CODE=$(curl -v --fail -s --max-time 3 --connect-timeout ${{ env.connect_timeout }} --retry ${{ env.max_attempts }} --retry-delay ${{ env.retry_delay_sec }} --write-out "%{http_code}" ${{ env.test_url }})
+          if test $HTTP_STATUS_CODE -ne ${{ env.http_status_code_expected }}; then
+            echo "HTTP status code is not ${{ env.http_status_code_expected }}"
+            exit 1
+          fi
+
+          echo "HTTP status is 200, check if response body is a validate JSON...."
+          curl -v --fail -s --max-time 3 --connect-timeout ${{ env.connect_timeout }} --retry ${{ env.max_attempts }} --retry-delay ${{ env.retry_delay_sec }} ${{ env.test_url }} -L  | jq
