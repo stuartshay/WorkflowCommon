@@ -8,7 +8,6 @@ on:
         required: true
         type: string
       aws_region:
-        required: true
         type: string
         default: "us-east-1"
     secrets:
