@@ -24,7 +24,7 @@ on:
         required: true
 
 jobs:
-  ansible:
+  jumpbox:
     runs-on: ubuntu-latest
     steps:
       - name: Add profile credentials to ~/.aws/credentials
