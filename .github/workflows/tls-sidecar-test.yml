@@ -58,5 +58,5 @@ jobs:
                --build-arg BUILD_DATE=${{ steps.date.outputs.date }} \
                --build-arg BUILD_NUMBER=${{ env.BUILD_NUMBER }} \
                -t $ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG  -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG --all-tags
+          docker push --all-tags
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG"
