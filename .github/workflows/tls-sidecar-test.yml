@@ -11,13 +11,10 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'docker/selenium/**'
+      - 'docker/tls-sidecar/**'
 
     branches:
       - master
-      - develop
-      - 'feature/**'
-      - 'fix/**'
 
 jobs:
   build:
