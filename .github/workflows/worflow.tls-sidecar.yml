@@ -2,14 +2,10 @@ name: TLS Sidecar Workflow
 env:
   AWS_REGION: us-east-1
   AWS_ECR_REPOSITORY: tls-sidecar
-  AWS_ECR_DOCKER_IMAGE_TAG: 1.15.${{ github.run_number }}-${{ github.sha }}
+  AZURE_REPOSITORY: tls-sidecar
 
   DOCKER_FILE: 'docker/tls-sidecar/Dockerfile'
-
-  #DH_DOCKER_IMAGE: stuartshay/azuredevopskats-selenium
-  #DOCKER_SCRIPT_PATH: docker/selenium
-
-  DOCKER_IMAGE_TAG: v96.0-${{ github.sha }}
+  DOCKER_IMAGE_TAG: 1.15.${{ github.run_number }}-${{ github.sha }}
   DOCKER_IMAGE_PLATFORM: linux/amd64,linux/arm/v7
   BUILD_NUMBER: ${{ github.sha }}
 
@@ -46,7 +42,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, Tag, and Cache
+      - name: Build, Tag and Cache
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -57,10 +53,13 @@ jobs:
           docker buildx build -f ${{ env.DOCKER_FILE }} --platform linux/amd64 --load  \
                --build-arg BUILD_DATE=${{ steps.date.outputs.date }} \
                --build-arg BUILD_NUMBER=${{ env.BUILD_NUMBER }} \
-               -t $ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+               -t $ECR_REGISTRY/$ECR_REPOSITORY:$DOCKER_IMAGE_TAG  \
+               -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+               -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:$DOCKER_IMAGE_TAG  \
+               -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:latest \
                --cache-from type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache \
                --output type=docker,dest=image.tar .
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG"
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$DOCKER_IMAGE_TAG"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -97,3 +96,34 @@ jobs:
           ECR_REPOSITORY: ${{ env.AWS_ECR_REPOSITORY }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+
+  publish-azure:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Load images
+        run: |
+          docker load --input docker/image.tar
+
+      - name: Azure Container Registry Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+      - name: ECR Registry Push
+        id: push-acr
+        run: |
+          docker push ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}} --all-tags
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [publish-aws, publish-azure]
+    steps:
+      - uses: geekyeggo/delete-artifact@v1
+        with:
+          name: docker
