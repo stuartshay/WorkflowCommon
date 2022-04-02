@@ -1,5 +1,5 @@
 module "network" {
-  source = "../modules/network"
+  source = "../../modules/network"
 
   name                 = local.realm_name
   vpc_cidr             = local.vpc_cidr

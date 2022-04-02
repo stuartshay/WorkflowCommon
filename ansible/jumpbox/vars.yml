@@ -1,0 +1,26 @@
+ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+basic_packages:
+- apt-transport-https
+- ca-certificates
+- curl
+- python3-botocore
+- python3-boto3
+- gnupg-agent
+- software-properties-common
+- net-tools
+- binutils
+- unzip
+- tree
+- nodejs
+
+desktop_packages:
+  - ubuntu-desktop
+  - tightvncserver
+  - gnome-panel
+  - gnome-settings-daemon
+  - metacity
+  - nautilus
+  - gnome-terminal
+
+vnc_default_password: ""
