@@ -2,13 +2,11 @@ name: TLS Sidecar Workflow
 env:
   AWS_REGION: us-east-1
   AWS_ECR_REPOSITORY: tls-sidecar
-  AWS_ECR_DOCKER_IMAGE_TAG: 1.15.${{ github.run_number }}-${{ github.sha }}
-
   AZURE_REPOSITORY: tls-sidecar
 
   DOCKER_FILE: 'docker/tls-sidecar/Dockerfile'
+  DOCKER_IMAGE_TAG: 1.15.${{ github.run_number }}-${{ github.sha }}
   DOCKER_IMAGE_PLATFORM: linux/amd64,linux/arm/v7
-
   BUILD_NUMBER: ${{ github.sha }}
 
 on:
@@ -55,11 +53,13 @@ jobs:
           docker buildx build -f ${{ env.DOCKER_FILE }} --platform linux/amd64 --load  \
                --build-arg BUILD_DATE=${{ steps.date.outputs.date }} \
                --build-arg BUILD_NUMBER=${{ env.BUILD_NUMBER }} \
-               -t $ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+               -t $ECR_REGISTRY/$ECR_REPOSITORY:$DOCKER_IMAGE_TAG  \
+               -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+               -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:$DOCKER_IMAGE_TAG  \
                -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:latest \
                --cache-from type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache \
                --output type=docker,dest=image.tar .
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG"
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$DOCKER_IMAGE_TAG"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
