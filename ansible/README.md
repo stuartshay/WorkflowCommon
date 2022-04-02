@@ -1,3 +1,3 @@
-# AWSDevOpsKats Ansible
+# Workflow Common Ansible
 
-[![Config Jumpbox](https://github.com/stuartshay/AzureDevOpsKats/actions/workflows/config-jumpbox.yml/badge.svg)](https://github.com/stuartshay/AzureDevOpsKats/actions/workflows/config-jumpbox.yml)
+[![Deploy Jumpbox Server](https://github.com/stuartshay/WorkflowCommon/actions/workflows/deploy-jumpbox.yml/badge.svg)](https://github.com/stuartshay/WorkflowCommon/actions/workflows/deploy-jumpbox.yml)
