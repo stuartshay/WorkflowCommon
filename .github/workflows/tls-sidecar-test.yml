@@ -114,3 +114,8 @@ jobs:
           login-server: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
           password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+      - name: ECR Registry Push
+        id: push-acr
+        run: |
+          docker push ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}} --all-tags
