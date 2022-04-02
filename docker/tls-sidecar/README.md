@@ -1,6 +1,6 @@
 ## TLS Sidecar Workflow
 
-[![Deploy Jumpbox Server](https://github.com/stuartshay/WorkflowCommon/actions/workflows/deploy-jumpbox.yml/badge.svg)](https://github.com/stuartshay/WorkflowCommon/actions/workflows/deploy-jumpbox.yml)
+[![TLS Sidecar Workflow](https://github.com/stuartshay/WorkflowCommon/actions/workflows/worflow.tls-sidecar.yml/badge.svg)](https://github.com/stuartshay/WorkflowCommon/actions/workflows/worflow.tls-sidecar.yml)
 
 ### Configuration
 
