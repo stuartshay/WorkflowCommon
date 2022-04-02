@@ -32,7 +32,7 @@ jobs:
           echo "Test URL: ${{ env.test_url }}"
           echo "Check if there is a HTTP ${{ env.http_status_code_expected }} status code...."
           HTTP_STATUS_CODE=$(curl --fail -s --max-time 3 --connect-timeout ${{ env.connect_timeout }} --retry ${{ env.max_attempts }} --retry-delay ${{ env.retry_delay_sec }} --write-out "%{http_code}" ${{ env.test_url }})
-          if test $HTTP_STATUS_CODE -ne ${{ env.http_status_code_expected }}; then
+          if [ $HTTP_STATUS_CODE != ${{ env.http_status_code_expected }} ]; then
             echo "HTTP status code is not ${{ env.http_status_code_expected }}"
             exit 1
           fi
