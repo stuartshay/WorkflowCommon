@@ -119,3 +119,12 @@ jobs:
         id: push-acr
         run: |
           docker push ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}} --all-tags
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [publish-aws],[publish-azure]
+    steps:
+      - uses: geekyeggo/delete-artifact@v1
+        with:
+          name: docker
+
