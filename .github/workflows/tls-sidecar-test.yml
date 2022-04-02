@@ -91,4 +91,9 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: ECR Registry Push
-        run: docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.AWS_ECR_REPOSITORY }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
