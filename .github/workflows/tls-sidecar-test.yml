@@ -59,7 +59,6 @@ jobs:
                --build-arg BUILD_NUMBER=${{ env.BUILD_NUMBER }} \
                -t $ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
                --cache-from type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache \
-               --cache-to type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache,mode=max \
                --output type=docker,dest=image.tar .
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$AWS_ECR_DOCKER_IMAGE_TAG"
 
