@@ -4,13 +4,11 @@ env:
   AWS_ECR_REPOSITORY: tls-sidecar
   AWS_ECR_DOCKER_IMAGE_TAG: 1.15.${{ github.run_number }}-${{ github.sha }}
 
+  AZURE_REPOSITORY: tls-sidecar
+
   DOCKER_FILE: 'docker/tls-sidecar/Dockerfile'
-
-  #DH_DOCKER_IMAGE: stuartshay/azuredevopskats-selenium
-  #DOCKER_SCRIPT_PATH: docker/selenium
-
-  DOCKER_IMAGE_TAG: v96.0-${{ github.sha }}
   DOCKER_IMAGE_PLATFORM: linux/amd64,linux/arm/v7
+
   BUILD_NUMBER: ${{ github.sha }}
 
 on:
@@ -104,3 +102,14 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
+
+      - name: Load images
+        run: |
+          docker load --input docker/image.tar
+
+      - name: Azure Container Registry Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
