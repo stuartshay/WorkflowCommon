@@ -122,9 +122,8 @@ jobs:
 
   cleanup:
     runs-on: ubuntu-latest
-    needs: [publish-aws],[publish-azure]
+    needs: [publish-aws, publish-azure]
     steps:
       - uses: geekyeggo/delete-artifact@v1
         with:
           name: docker
-
