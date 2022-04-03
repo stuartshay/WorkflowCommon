@@ -86,9 +86,9 @@ resource "null_resource" "my_instance" {
 
   provisioner "remote-exec" {
     connection {
-      host = aws_eip.this.public_ip
-      user = var.ansible_ssh_user
-      file = file(var.ansible_ssh_private_key_path)
+      host        = aws_eip.this.public_ip
+      user        = var.ansible_ssh_user
+      private_key = file(var.ansible_ssh_private_key_path)
     }
 
     inline = ["echo 'connected!'"]
