@@ -84,6 +84,16 @@ resource "null_resource" "my_instance" {
     public_ip    = aws_eip.this.public_ip
   }
 
+  provisioner "remote-exec" {
+    connection {
+      host = aws_eip.this.public_ip
+      user = var.ansible_ssh_user
+      file = file(var.ansible_ssh_private_key_path)
+    }
+
+    inline = ["echo 'connected!'"]
+  }
+
   provisioner "local-exec" {
     command = "ansible-playbook ${path.module}/../../../ansible/jumpbox/tasks.yml -e 'app_env=${var.app_env}' -e 'vnc_default_password=${var.vnc_default_password}' -u ${var.ansible_ssh_user} --private-key ${var.ansible_ssh_private_key_path} -i '${aws_eip.this.public_ip},' -vv"
   }
