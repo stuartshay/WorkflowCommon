@@ -10,8 +10,11 @@ http {
   gzip_min_length 1000;
  
   server {
-    listen 80;
- 
+    listen 80 default_server;
+    listen 443 ssl http2 default_server;
+    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+
     location / {
       # Reject requests with unsupported HTTP method
       if ($request_method !~ ^(GET|POST|HEAD|OPTIONS|PUT|DELETE)$) {

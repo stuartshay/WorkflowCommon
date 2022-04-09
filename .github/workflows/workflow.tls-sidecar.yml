@@ -57,8 +57,7 @@ jobs:
                -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
                -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:$DOCKER_IMAGE_TAG  \
                -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:latest \
-               --cache-from type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache \
-               --output type=docker,dest=image.tar .
+               .
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$DOCKER_IMAGE_TAG"
 
       - name: Upload artifact
