@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: docker
-          path: image.tar
+          path: ${{ env.DOCKER_FILE_DIR }}/image.tar
 
   publish-aws:
     runs-on: ubuntu-latest
