@@ -4,7 +4,8 @@ env:
   AWS_ECR_REPOSITORY: tls-sidecar
   AZURE_REPOSITORY: tls-sidecar
 
-  DOCKER_FILE: 'docker/tls-sidecar/Dockerfile'
+  DOCKER_FILE_DIR: 'docker/tls-sidecar'
+  DOCKER_FILE_NAME: 'Dockerfile'
   DOCKER_IMAGE_TAG: 1.15.${{ github.run_number }}-${{ github.sha }}
   DOCKER_IMAGE_PLATFORM: linux/amd64,linux/arm/v7
   BUILD_NUMBER: ${{ github.sha }}
@@ -49,15 +50,17 @@ jobs:
           ECR_REPOSITORY: ${{ env.AWS_ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          cd ${{ env.DOCKER_FILE_DIR }}
           docker buildx create --name mybuilder --use
-          docker buildx build -f ${{ env.DOCKER_FILE }} --platform linux/amd64 --load  \
+          docker buildx build -f ${{ env.DOCKER_FILE_NAME }} --platform linux/amd64 --load  \
                --build-arg BUILD_DATE=${{ steps.date.outputs.date }} \
                --build-arg BUILD_NUMBER=${{ env.BUILD_NUMBER }} \
                -t $ECR_REGISTRY/$ECR_REPOSITORY:$DOCKER_IMAGE_TAG  \
                -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
                -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:$DOCKER_IMAGE_TAG  \
                -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.AZURE_REPOSITORY}}:latest \
-               .
+               --cache-from type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache \
+               --output type=docker,dest=image.tar .
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$DOCKER_IMAGE_TAG"
 
       - name: Upload artifact
