@@ -13,6 +13,21 @@ resource "aws_internet_gateway" "this" {
   }
 }
 
+resource "aws_eip" "ext_nat_gw" {
+  vpc = true
+}
+
+resource "aws_nat_gateway" "this" {
+  allocation_id = aws_eip.ext_nat_gw.id
+  subnet_id     = aws_subnet.public["a"].id
+
+  tags = {
+    Name = "external-nat-gw"
+  }
+
+  depends_on = [aws_internet_gateway.this]
+}
+
 resource "aws_subnet" "public" {
   for_each = var.public_subnet_cidrs
 
@@ -61,4 +76,10 @@ module "private_routes" {
   name       = "${var.name}-private"
   vpc_id     = aws_vpc.this.id
   subnet_ids = [for s in aws_subnet.private : s.id]
+  nat_gw_routes = [
+    {
+      cidr_block     = "0.0.0.0/0"
+      nat_gateway_id = aws_nat_gateway.this.id
+    }
+  ]
 }
