@@ -15,9 +15,8 @@ on:
         required: false
         default: develop
         options:
-          - develop
-          - master
-          - feature
+          - navigatorglass-develop
+          - navigatorglass-master
       terraform_action:
         type: choice
         description: Terraform Action
