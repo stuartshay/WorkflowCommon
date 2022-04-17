@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      branch_name:
+        required: true
+        type: string
       ecs_cluster:
         required: true
         type: string
@@ -28,6 +31,7 @@ jobs:
     env:
       ecs_cluster: ${{ inputs.ecs_cluster }}
       ecs_service: ${{ inputs.ecs_service }}
+      branch_name: ${{ inputs.branch_name }}
       AWS_REGION: ${{ inputs.aws_region }}
     steps:
       - name: Configure AWS credentials
@@ -51,7 +55,7 @@ jobs:
         id: set_app_url
         run: |
           echo "ECS Task Public IP: ${{ env.TASK_PUBLIC_IP }}"
-          if [ "$BRANCH_NAME" != "master" ]
+          if [ "${{ env.branch_name }}" != "master" ]
           then
             echo "::set-output name=app_url::${{ env.TASK_PUBLIC_IP }}"
           else
