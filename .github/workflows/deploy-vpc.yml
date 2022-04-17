@@ -33,7 +33,7 @@ jobs:
     name: 'Terraform'
     runs-on: ubuntu-latest
     env:
-      TERRAFORM_CHDIR:  terraform/networks/${{ inputs.environment }}
+      TERRAFORM_CHDIR:  terraform/networks/${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
