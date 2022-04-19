@@ -1,5 +1,8 @@
 resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
+
+  enable_dns_hostnames = true
+
   tags = {
     Name = var.name
   }
@@ -34,6 +37,8 @@ resource "aws_subnet" "public" {
   vpc_id            = aws_vpc.this.id
   availability_zone = "${var.region}${each.key}"
   cidr_block        = each.value
+
+  enable_resource_name_dns_a_record_on_launch = true
 
   tags = {
     Name = "${var.name}-public-${each.key}"
